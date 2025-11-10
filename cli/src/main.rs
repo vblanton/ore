@@ -643,10 +643,8 @@ async fn auto_ev(
         for i in 0..25 {
             let d_i = round.deployed[i] as f64;
             let total = total_deployed as f64;
-            let ev_sol = ev_sol_only(try_amount, d_i, total);
-            let ev_ore = ev_ore_component(try_amount, d_i, motherlode_now);
-            let ev_total = if price_p_sol_per_ore > 0.0 { ev_sol + ore_haircut * price_p_sol_per_ore * ev_ore } else { ev_sol };
-            if ev_total > 0.0 { unit_ev_pairs.push((i, ev_total)); }
+            let ev_total_lamports = ev_total(try_amount, d_i, total, motherlode_now, price_p_sol_per_ore, ore_haircut);
+            if ev_total_lamports > 0.0 { unit_ev_pairs.push((i, ev_total_lamports)); }
         }
         unit_ev_pairs.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
         if unit_ev_pairs.is_empty() {
@@ -660,9 +658,7 @@ async fn auto_ev(
                         for i in 0..25 {
                             let d_i = round.deployed[i] as f64;
                             let total = total_deployed as f64;
-                            let ev_sol = ev_sol_only(try_amount, d_i, total);
-                            let ev_ore = ev_ore_component(try_amount, d_i, motherlode_now);
-                                    let ev_total = if price_p_sol_per_ore > 0.0 { ev_sol + ore_haircut * price_p_sol_per_ore * ev_ore } else { ev_sol };
+                            let ev_total = ev_total(try_amount, d_i, total, motherlode_now, price_p_sol_per_ore, ore_haircut);
                             if ev_total > best_ev {
                                 best_ev = ev_total;
                                 best_i = i;
